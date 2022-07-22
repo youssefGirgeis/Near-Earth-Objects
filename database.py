@@ -43,8 +43,20 @@ class NEODatabase:
         self._approaches = approaches
 
         # TODO: What additional auxiliary data structures will be useful?
+        self._neos_pdes_map = {}
+        self._neos_name_map = {}
 
         # TODO: Link together the NEOs and their close approaches.
+        for neo in self._neos:
+            self._neos_pdes_map[neo.designation] = neo
+            self._neos_name_map[neo.name] = neo
+
+        for approach in self._approaches:
+            if self._neos_pdes_map[approach.designation]:
+                approach.neo = self._neos_pdes_map[approach.designation]
+                self._neos_pdes_map[approach.designation].approaches.append(approach)
+            
+
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -60,7 +72,7 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
         # TODO: Fetch an NEO by its primary designation.
-        return None
+        return self._neos_pdes_map.get(designation, None)
 
     def get_neo_by_name(self, name):
         """Find and return an NEO by its name.
@@ -77,7 +89,7 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # TODO: Fetch an NEO by its name.
-        return None
+        return self._neos_name_map.get(name, None)
 
     def query(self, filters=()):
         """Query close approaches to generate those that match a collection of filters.
